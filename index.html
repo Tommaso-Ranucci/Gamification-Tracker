@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gamification Tracker</title>
+    <link rel="manifest" href="manifest.json">
+    <script>
+        // Registra il service worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js')
+                .then(() => console.log("Service Worker registrato"))
+                .catch((err) => console.log("Service Worker errore: ", err));
+        }
+    </script>
+</head>
+<body>
+    <h1>Gamification Tracker</h1>
+    <p>Gestisci i tuoi task e premi con un sistema di punti personalizzato!</p>
+
+    <div>
+        <h2>Task</h2>
+        <input id="task-name" type="text" placeholder="Nome del task">
+        <input id="task-points" type="number" placeholder="Punti">
+        <button onclick="addTask()">Aggiungi Task</button>
+        <ul id="task-list"></ul>
+    </div>
+
+    <div>
+        <h2>Premi</h2>
+        <input id="reward-name" type="text" placeholder="Nome del premio">
+        <input id="reward-points" type="number" placeholder="Punti necessari">
+        <button onclick="addReward()">Aggiungi Premio</button>
+        <ul id="reward-list"></ul>
+    </div>
+
+    <div>
+        <h2>Punti Totali</h2>
+        <p id="total-points">0</p>
+        <button onclick="resetPoints()">Reset Punti</button>
+    </div>
+
+    <script>
+        // Funzioni per task e premi
+        let totalPoints = 0;
+        const taskList = document.getElementById("task-list");
+        const rewardList = document.getElementById("reward-list");
+        const totalPointsDisplay = document.getElementById("total-points");
+
+        function addTask() {
+            const name = document.getElementById("task-name").value;
+            const points = parseInt(document.getElementById("task-points").value);
+            if (name && points) {
+                const li = document.createElement("li");
+                li.textContent = `${name} (+${points} punti)`;
+                li.onclick = () => {
+                    totalPoints += points;
+                    totalPointsDisplay.textContent = totalPoints;
+                    taskList.removeChild(li);
+                };
+                taskList.appendChild(li);
+            }
+        }
+
+        function addReward() {
+            const name = document.getElementById("reward-name").value;
+            const points = parseInt(document.getElementById("reward-points").value);
+            if (name && points) {
+                const li = document.createElement("li");
+                li.textContent = `${name} (-${points} punti)`;
+                li.onclick = () => {
+                    if (totalPoints >= points) {
+                        totalPoints -= points;
+                        totalPointsDisplay.textContent = totalPoints;
+                        rewardList.removeChild(li);
+                    } else {
+                        alert("Punti insufficienti!");
+                    }
+                };
+                rewardList.appendChild(li);
+            }
+        }
+
+        function resetPoints() {
+            totalPoints = 0;
+            totalPointsDisplay.textContent = totalPoints;
+        }
+    </script>
+</body>
+</html>
